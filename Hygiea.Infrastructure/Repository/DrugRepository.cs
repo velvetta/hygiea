@@ -1,9 +1,7 @@
 ﻿using Hygiea.Core.Entities;
 using Hygiea.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Hygiea.Infrastructure.Repository

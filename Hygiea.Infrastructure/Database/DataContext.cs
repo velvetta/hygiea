@@ -16,6 +16,8 @@ namespace Hygiea.Infrastructure.Database
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
+
         public DbSet<Privilege> Privileges { get; set; }
+        public DbSet<Drug> Drugs { get; set; }
     }
 }
