@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Hygiea.Core\Hygiea.Core.csproj" />
+    <ProjectReference Include="..\Hygiea.Infrastructure\Hygiea.Infrastructure.csproj" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

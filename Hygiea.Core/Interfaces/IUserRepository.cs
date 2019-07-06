@@ -12,7 +12,7 @@ namespace Hygiea.Core.Interfaces
         Task<bool> UpdateUserAsync(User user);
         Task<IEnumerable<User>> GetAllUsersAsync();
         Task<bool> DeleteUserAsync(string id);
-
+        User FindUser(string id);
         Task<User> FindUserByIdAsync(string id);
         Task<User> FindUserByName(string name);
         Task<User> CheckIfUserExists(string emailAddress, string password);

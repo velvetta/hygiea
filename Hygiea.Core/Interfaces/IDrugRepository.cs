@@ -11,7 +11,9 @@ namespace Hygiea.Core.Interfaces
         Task<bool> AddDrugAsync(Drug drug);
         Task<bool> DeleteDrugAsync(string id);
         Task<IEnumerable<Drug>> GetAllDrugsAsync();
-        Task<Drug> FindDrugByName(string name);
+        Task<Drug> FindDrugByID(string id);
         Task<bool> UpdateDrug(Drug drugs);
+        Task<IEnumerable<Drug>> FinishedDrugs();
+        Task<IEnumerable<Drug>> AboutToFinishdDrug();
     }
 }

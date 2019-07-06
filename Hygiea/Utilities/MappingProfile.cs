@@ -16,6 +16,13 @@ namespace Hygiea.Utilities
             CreateMap<User, UserDTO>()
                 .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => "")); ;
             CreateMap<UserDTO, User>();
+            CreateMap<Drug,DrugDTO>();
+            CreateMap<DrugDTO,Drug>();
+            CreateMap<Appointment, AppointmentDTO>()
+            .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User.Id));
+            CreateMap<AppointmentDTO,Appointment>();
+           
+            
         }
     }
 

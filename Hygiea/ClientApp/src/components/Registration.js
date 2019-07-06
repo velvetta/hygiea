@@ -13,88 +13,115 @@ import {
 class Registration extends React.Component {
   state = {
     credentials: {
-      firstName: "",
-      lastName: "",
-      emailAddress: "",
-      gender: "",
-      phoneNumber: "",
-      dateOfBirth: "",
-      address: "",
-      password: "",
-      passwordRepeat: ""
+      Id: "",
+      FirstName: "",
+      LastName: "",
+      EmailAddress: "",
+      Gender: "",
+      Phonenumber: "",
+      DateOfBirth: "",
+      Address: "",
+      PasswordHash: ""
     },
     student: {
-      faculty: "",
-      department: "",
-      matricNumber: "",
-      parentPhoneNumber: "",
-      parentAddress: "",
-      yearofEntry: ""
+      Faculty: "",
+      Department: "",
+      MatricNumber: "",
+      ParentPhoneNumber: "",
+      ParentAddress: "",
+      YearofEntry: ""
     },
     staff: {
-      yearofEmployment: "",
-      nextofKin: "",
-      nextofKinAddress: "",
-      nextofKinPhoneNumber: ""
+      YearofEmployment: "",
+      NextofKin: "",
+      NextofKinAddress: "",
+      NextofKinPhoneNumber: ""
     },
-    AccountType: "student"
+    passwordRepeat: "",
+    AccountType: "student",
+    
   };
 
   handleRegistration() {
-    fetch("/api/user/register", {
+    const obj = {...this.state.credentials, ...this.state.student, ...this.state.staff, AccountType: this.state.AccountType};
+
+    fetch("http://localhost:52161/api/user/register", {
       method: "POST",
-      body: JSON.stringify(this.state),
-      header: new Headers({
-        ContentType: "application/json"
-      })
+      body: JSON.stringify(obj),
+      headers: new Headers({
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      })      
     })
-      .then(res => res.text())
+      .then(res => res.json())
       .then(data => {})
       .catch(err => alert("Error ocurred!"));
 
-    console.log(this.state);
+    console.log(obj);
+  }
+  getValidationState() {
+    const length = this.state.credentials.PasswordHash.length;
+    if (length > 5) return 'success';
+    else if (length > 2) return 'warning';
+    else if (length > 0) return 'error';
+    return null;
+  }
+  validatePassword(){
+    if(this.state.credentials.PasswordHash.trim().length<=0) return null;
+
+    if(this.state.passwordRepeat === this.state.credentials.PasswordHash) return 'success';
+   
+    else if (this.state.passwordRepeat ===! this.state.credentials.PasswordHash) 
+      
+      return 'error';
+    
   }
 
   handleChange(event) {
     const obj = { ...this.state };
 
     if (event.target.name === "firstname") {
-      obj.credentials.firstName = event.target.value;
+      obj.credentials.FirstName = event.target.value;
     } else if (event.target.name === "lastname") {
-      obj.credentials.lastName = event.target.value;
+      obj.credentials.LastName = event.target.value;
     } else if (event.target.name === "emailaddress") {
-      obj.credentials.emailAddress = event.target.value;
+      obj.credentials.EmailAddress = event.target.value;
     } else if (event.target.name === "gender") {
-      obj.credentials.gender = event.target.value;
+      obj.credentials.Gender = event.target.value;
     } else if (event.target.name === "phonenumber") {
-      obj.credentials.phoneNumber = event.target.value;
+      obj.credentials.Phonenumber = event.target.value;
     } else if (event.target.name === "dateofbirth") {
-      obj.credentials.dateOfBirth = event.target.value;
+      obj.credentials.DateOfBirth = event.target.value;
     } else if (event.target.name === "address") {
-      obj.credentials.address = event.target.value;
+      obj.credentials.Address = event.target.value;
     } else if (event.target.name === "faculty") {
-      obj.student.faculty = event.target.value;
+      obj.student.Faculty = event.target.value;
     } else if (event.target.name === "department") {
-      obj.student.department = event.target.value;
+      obj.student.Department = event.target.value;
     } else if (event.target.name === "matricnumber") {
-      obj.student.matricNumber = event.target.value;
+      obj.student.MatricNumber = event.target.value;
     } else if (event.target.name === "parentphonenumber") {
-      obj.student.parentPhoneNumber = event.target.value;
+      obj.student.ParentPhoneNumber = event.target.value;
     } else if (event.target.name === "parentaddress") {
-      obj.student.parentAddress = event.target.value;
+      obj.student.ParentAddress = event.target.value;
     } else if (event.target.name === "yearofentry") {
-      obj.student.yearofEntry = event.target.value;
+      obj.student.YearofEntry = event.target.value;
     } else if (event.target.name === "yearofemployment") {
-      obj.staff.yearofEmployment = event.target.value;
+      obj.staff.YearofEmployment = event.target.value;
     } else if (event.target.name === "nextofkin") {
-      obj.staff.nextofKin = event.target.value;
+      obj.staff.NextofKin = event.target.value;
     } else if (event.target.name === "nextofkinaddress") {
-      obj.staff.nextofKinAddress = event.target.value;
+      obj.staff.NextofKinAddress = event.target.value;
     } else if (event.target.name === "nextofkinphonenumber") {
-      obj.staff.nextofKinPhoneNumber = event.target.value;
+      obj.staff.NextofKinPhoneNumber = event.target.value;
     } else if (event.target.name === "accounttype") {
       obj.AccountType = event.target.value;
+    }else if (event.target.name === "password"){
+      obj.credentials.PasswordHash = event.target.value;
+    }else if(event.target.name === "passwordRepeat"){
+      obj.passwordRepeat = event.target.value;
     }
+     
 
     this.setState(obj);
   }
@@ -108,7 +135,7 @@ class Registration extends React.Component {
               <ControlLabel>Matriculation Number</ControlLabel>
               <FormControl
                 name="matricnumber"
-                value={this.state.student.matricNumber}
+                value={this.state.student.MatricNumber}
                 onChange={event => this.handleChange(event)}
                 placeholder="Enter Matric Number"
               />
@@ -119,7 +146,7 @@ class Registration extends React.Component {
               <ControlLabel>Year of Entry</ControlLabel>
               <FormControl
                 name="yearofentry"
-                value={this.state.student.yearofEntry}
+                value={this.state.student.YearofEntry}
                 onChange={event => this.handleChange(event)}
                 placeholder="Enter Year of Entry"
               />
@@ -133,7 +160,7 @@ class Registration extends React.Component {
               <FormControl
                 componentClass="select"
                 name="faculty"
-                value={this.state.student.faculty}
+                value={this.state.student.Faculty}
                 onChange={event => this.handleChange(event)}
                 placeholder="Select Faculty"
               >
@@ -150,7 +177,7 @@ class Registration extends React.Component {
               <ControlLabel>Department</ControlLabel>
               <FormControl
                 name="department"
-                value={this.state.student.department}
+                value={this.state.student.Department}
                 onChange={event => this.handleChange(event)}
                 placeholder="Enter Department"
               />
@@ -165,7 +192,7 @@ class Registration extends React.Component {
               <FormControl
                 componentClass="textarea"
                 name="parentaddress"
-                value={this.state.student.parentAddress}
+                value={this.state.student.ParentAddress}
                 onChange={event => this.handleChange(event)}
                 placeholder="Enter Parent Address"
               />
@@ -185,7 +212,7 @@ class Registration extends React.Component {
               <ControlLabel>Year of Emoployment</ControlLabel>
               <FormControl
                 name="yearofemployment"
-                value={this.state.staff.yearofEmployment}
+                value={this.state.staff.YearofEmployment}
                 onChange={event => this.handleChange(event)}
                 placeholder="Enter Year of Employment"
               />
@@ -198,7 +225,7 @@ class Registration extends React.Component {
               <ControlLabel>Next of Kin</ControlLabel>
               <FormControl
                 name="nextofkin"
-                value={this.state.staff.nextofKin}
+                value={this.state.staff.NextofKin}
                 onChange={event => this.handleChange(event)}
                 placeholder="Enter Next of kin "
               />
@@ -210,7 +237,7 @@ class Registration extends React.Component {
               <ControlLabel>Next of Kin Phone Number</ControlLabel>
               <FormControl
                 name="nextofkinphonenumber"
-                value={this.state.staff.nextofKinPhoneNumber}
+                value={this.state.staff.NextofKinPhoneNumber}
                 onChange={event => this.handleChange(event)}
                 placeholder="Enter Next of kin Phone number"
               />
@@ -225,7 +252,7 @@ class Registration extends React.Component {
               <FormControl
                 componentClass="textarea"
                 name="nextofkinaddress"
-                value={this.state.staff.nextofKinAddress}
+                value={this.state.staff.NextofKinAddress}
                 onChange={event => this.handleChange(event)}
                 placeholder="Enter Next of kin Address"
               />
@@ -244,7 +271,7 @@ class Registration extends React.Component {
             <Row>
               <Col>
                 <ControlLabel className="register">
-                  Registeration Form
+                  Registration Form
                 </ControlLabel>
               </Col>
             </Row>
@@ -254,9 +281,10 @@ class Registration extends React.Component {
                   <ControlLabel>First Name</ControlLabel>
                   <FormControl
                     name="firstname"
-                    value={this.state.credentials.firstName}
+                    value={this.state.credentials.FirstName}
                     onChange={event => this.handleChange(event)}
                     placeholder="Enter First Name"
+                    required
                   />
                 </FormGroup>
               </Col>
@@ -266,9 +294,10 @@ class Registration extends React.Component {
                   <ControlLabel>Last Name</ControlLabel>
                   <FormControl
                     name="lastname"
-                    value={this.state.credentials.lastName}
+                    value={this.state.credentials.LastName}
                     onChange={event => this.handleChange(event)}
                     placeholder="Enter Last Name"
+                    required
                   />
                 </FormGroup>
               </Col>
@@ -280,9 +309,10 @@ class Registration extends React.Component {
                   <ControlLabel>Email Address</ControlLabel>
                   <FormControl
                     name="emailaddress"
-                    value={this.state.credentials.emailAddress}
+                    value={this.state.credentials.EmailAddress}
                     onChange={event => this.handleChange(event)}
                     placeholder="Enter Email Address"
+                    required
                   />
                 </FormGroup>
               </Col>
@@ -291,9 +321,10 @@ class Registration extends React.Component {
                   <ControlLabel>Phone Number</ControlLabel>
                   <FormControl
                     name="phonenumber"
-                    value={this.state.credentials.phoneNumber}
+                    value={this.state.credentials.Phonenumber}
                     onChange={event => this.handleChange(event)}
                     placeholder="Enter Phone Number"
+                    required
                   />
                 </FormGroup>
               </Col>
@@ -305,9 +336,10 @@ class Registration extends React.Component {
                   <FormControl
                     componentClass="textarea"
                     name="address"
-                    value={this.state.credentials.address}
+                    value={this.state.credentials.Address}
                     onChange={event => this.handleChange(event)}
                     placeholder="Enter Address"
+                    required
                   />
                 </FormGroup>
               </Col>
@@ -319,9 +351,10 @@ class Registration extends React.Component {
                   <FormControl
                     componentClass="select"
                     name="gender"
-                    value={this.state.credentials.address}
+                    value={this.state.credentials.Gender}
                     onChange={event => this.handleChange(event)}
                     placeholder="Select Gender"
+                    required
                   >
                     <option value="null">select an option</option>
                     <option value="male">Male</option>
@@ -334,9 +367,10 @@ class Registration extends React.Component {
                   <ControlLabel>Date of Birth</ControlLabel>
                   <FormControl
                     name="dateofbirth"
-                    value={this.state.credentials.dateOfBirth}
+                    value={this.state.credentials.DateOfBirth}
                     onChange={event => this.handleChange(event)}
                     placeholder="Select Date of Birth"
+                    required
                   />
                 </FormGroup>
               </Col>
@@ -351,6 +385,7 @@ class Registration extends React.Component {
                     value={this.state.credentials.AccountType}
                     onChange={event => this.handleChange(event)}
                     placeholder="Select Account Type"
+                    required
                   >
                     <option value="null">select an option</option>
                     <option value="student">Student</option>
@@ -366,7 +401,7 @@ class Registration extends React.Component {
 
             <Row>
               <Col xs={6} md={4}>
-                <FormGroup>
+                <FormGroup validationState={this.getValidationState()}>
                   <ControlLabel>Password</ControlLabel>
                   <FormControl
                     name="password"
@@ -374,20 +409,21 @@ class Registration extends React.Component {
                     value={this.state.password}
                     onChange={event => this.handleChange(event)}
                     placeholder="Password"
-                  />
+                  /><FormControl.Feedback />
+                  {/* <HelpBlock>Validation is based on string length.</HelpBlock> */}
                 </FormGroup>
               </Col>
 
               <Col xs={6} md={4}>
-                <FormGroup>
+                <FormGroup validationState={this.validatePassword()}>
                   <ControlLabel>Repeat password</ControlLabel>
                   <FormControl
-                    name="repeatPassword"
+                    name="passwordRepeat"
                     type="password"
                     value={this.state.passwordRepeat}
                     onChange={event => this.handleChange(event)}
                     placeholder="Repeat password"
-                  />
+                  /><FormControl.Feedback />
                 </FormGroup>
               </Col>
             </Row>
@@ -400,8 +436,10 @@ class Registration extends React.Component {
               >
                 Register
               </Button>
+              
             </div>
           </Grid>
+         
         </form>
       </div>
     );

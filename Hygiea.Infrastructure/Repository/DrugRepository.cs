@@ -1,7 +1,9 @@
 ﻿using Hygiea.Core.Entities;
 using Hygiea.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hygiea.Infrastructure.Repository
@@ -14,10 +16,22 @@ namespace Hygiea.Infrastructure.Repository
             this.dataContext = dataContext;
         }
 
+        public async Task<IEnumerable<Drug>> AboutToFinishdDrug()
+        {
+            return await dataContext.Drugs.Where(x=>x.Quantity <= 3).ToListAsync();
+        }
+
         public async Task<bool> AddDrugAsync(Drug drug)
         {
             if (drug == null) return false;
-            await dataContext.Drugs.AddAsync(drug);
+            var drugs = new Drug{
+                Id = $"HYGD - {new Random().Next(1111111,9999999)}",
+                Name = drug.Name,
+                Price = drug.Price,
+                Quantity = drug.Quantity,
+                DateAdded = DateTime.Now.ToString()
+            };
+            await dataContext.Drugs.AddAsync(drugs);
             return await dataContext.SaveChangesAsync() == 1;
         }
 
@@ -32,11 +46,16 @@ namespace Hygiea.Infrastructure.Repository
             return false;
         }
 
-        public async Task<Drug> FindDrugByName(string name)
+        public async Task<Drug> FindDrugByID(string id)
         {
-            if (name == null) return null;
-            var findName = await dataContext.Drugs.SingleOrDefaultAsync(x => x.Name == name);
-            return findName;
+            if (id == null) return null;
+            var findId = await dataContext.Drugs.SingleOrDefaultAsync(x => x.Id == id);
+            return findId;
+        }
+
+        public async Task<IEnumerable<Drug>> FinishedDrugs()
+        {
+            return await dataContext.Drugs.Where(x=>x.Quantity == 0).ToListAsync();
         }
 
         public async Task<IEnumerable<Drug>> GetAllDrugsAsync()
@@ -48,9 +67,11 @@ namespace Hygiea.Infrastructure.Repository
         {
             if (drugs != null)
             {
-                var find = await dataContext.Drugs.FindAsync(drugs.Id);
-                dataContext.Drugs.Update(find);
-                return true;
+                var drugToUpdate = await dataContext.Drugs.SingleAsync(x=>x.Id == drugs.Id);
+                drugToUpdate.Name = drugs.Name;
+                drugToUpdate.Price = drugs.Price;
+                drugToUpdate.Quantity = drugs.Quantity;
+                return (await dataContext.SaveChangesAsync()==1);
             }
             return false;
 

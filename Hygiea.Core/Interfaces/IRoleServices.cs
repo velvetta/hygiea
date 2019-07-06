@@ -15,6 +15,7 @@ namespace Hygiea.Core.Interfaces
         Task<Role> GetRole(string roleName);
         Task<bool> AddUserToRole(string role, string userId);
         Task<bool> DeleteUserFromRole(string role, string userId);
+        Task<Role> GetUserRole(string id);
         Task<IEnumerable<Role>> GetUserRoles(string userId);
     }
 }

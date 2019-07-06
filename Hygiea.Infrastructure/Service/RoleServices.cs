@@ -101,5 +101,14 @@ namespace Hygiea.Infrastructure.Service
             }
             return false;
         }
+
+        public async Task<Role> GetUserRole(string id){
+            if(id!=null){
+                var user = await dataContext.UserRoles.Include(x=>x.User).Include(x=>x.Role).SingleOrDefaultAsync(x=>x.User.Id == id);
+                var role = user.Role;
+                return role;
+            }
+            return null;
+        }
     }
 }

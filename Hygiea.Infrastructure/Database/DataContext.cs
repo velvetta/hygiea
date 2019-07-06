@@ -19,5 +19,6 @@ namespace Hygiea.Infrastructure.Database
 
         public DbSet<Privilege> Privileges { get; set; }
         public DbSet<Drug> Drugs { get; set; }
+        public DbSet<Appointment> Appointments {get;set;}
     }
 }

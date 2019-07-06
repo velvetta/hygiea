@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hygiea.Infrastructure.Repository
@@ -53,6 +54,14 @@ namespace Hygiea.Infrastructure.Repository
             return null;
         }
 
+        public User FindUser(string id){
+            if(id != null){
+                var user = dataContext.Users.FirstOrDefault(x=>x.Id == id);
+                return user ?? null;
+            }
+            return null;
+        }
+
         public async Task<User> FindUserByName(string name)
         {
             if (name != null)
@@ -79,10 +88,10 @@ namespace Hygiea.Infrastructure.Repository
                 if (user == null) return false;
                 var password = user.PasswordHash;
                 user.PasswordHash = Encryption.Encryption.MD5Hash(password);
-
+                user.Id =  $"HYG - {new Random().Next(1111111,9999999)}";
 
                 await hygieaManager.AddUserAsync(user);
-                await roleServices.AddUserToRole("Administrator", user.Id);
+                await roleServices.AddUserToRole("RegularUser", user.Id);
                 return true;
             }
             catch { return false; }
