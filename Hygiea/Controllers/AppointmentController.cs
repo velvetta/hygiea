@@ -52,7 +52,7 @@ namespace Hygiea.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Administrator")]
+        // [Authorize(Roles = "Administrator")]
         [Route("getappointments")]
         public async Task<IEnumerable<AppointmentDTO>> GetAppointments(){
              if (!ModelState.IsValid)
@@ -66,7 +66,7 @@ namespace Hygiea.Controllers
         }
 
         [HttpGet]
-        [Route("getuserappointment/{id}")]
+        [Route("getuserappointment")]
         // [Authorize]
         public async Task<IEnumerable<AppointmentDTO>> GetUserAppointment(string userId){
             if (!ModelState.IsValid)
@@ -77,15 +77,64 @@ namespace Hygiea.Controllers
             userAppointment.ToList().ForEach(x=>appointmentCollection.Add(mapper.Map<Appointment, AppointmentDTO>(x)));
             return appointmentCollection;
         }
+        
+        [HttpGet]
+        [Authorize(Roles = "Administration")]
+        [Route("getdailyappointment")]
+        public async Task<IEnumerable<AppointmentDTO>> GetDailyAppointment(){
+            if (!ModelState.IsValid)
+                return null;
+            var dailyAppointment = await appointmentRepository.GetDailyAppointment();
+               var appointmentCollection = new List<AppointmentDTO>();
+            dailyAppointment.ToList().ForEach(x=>appointmentCollection.Add(mapper.Map<Appointment, AppointmentDTO>(x)));
+            return appointmentCollection;
+        }
 
+        [HttpGet]
+        [Route("approvedappointment")]
+        public async Task<IEnumerable<AppointmentDTO>> ApprovedAppointment(){
+            if (!ModelState.IsValid)
+                return null;
+            var approvedAppointment = await appointmentRepository.ApprovedAppointment();
+            var appointmentCollection = new List<AppointmentDTO>();
+            approvedAppointment.ToList().ForEach(x=>appointmentCollection.Add(mapper.Map<Appointment, AppointmentDTO>(x)));
+            return appointmentCollection;
+        }
+
+        [HttpGet]
+        [Route("pendingappointment")]
+        [Authorize(Roles = "Administration")]
+        public async Task<IEnumerable<AppointmentDTO>> PendingAppointment(){
+            if (!ModelState.IsValid)
+                return null;
+
+            var pendingAppointment = await appointmentRepository.PendingAppointment();
+            var appointmentCollection = new List<AppointmentDTO>();
+            pendingAppointment.ToList().ForEach(x=>appointmentCollection.Add(mapper.Map<Appointment, AppointmentDTO>(x)));
+            return appointmentCollection;
+        }
+        
         [HttpPost]
-        [Route("approveappointment/{id}")]
-        public async Task<IActionResult> ApproveAppointment(string id){
+        [Route("approveadminappointment/{id}")]
+        public async Task<IActionResult> ApproveAdminAppointment(string id){
             if (!ModelState.IsValid)
                 return null;
 
             if(id !=null){
-                await appointmentRepository.ApproveAppointment(id);
+                await appointmentRepository.ApproveAdminAppointment(id);
+                return Ok("Success");
+            }
+            return BadRequest("Not Successful");
+        }
+         
+        [HttpPost]
+        [Route("approveuserappointment/{id}")]
+        public async Task<IActionResult> ApproveUserAppointment(string id){
+            if (!ModelState.IsValid)
+                return null;
+
+            if(id !=null){
+                await appointmentRepository.ApproveUserAppointment(id);
                 return Ok("Success");
             }
             return BadRequest("Not Successful");
@@ -116,5 +165,8 @@ namespace Hygiea.Controllers
             }
             return null;
         }
+
+       
+    
     }
 }

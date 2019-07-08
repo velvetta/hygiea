@@ -11,9 +11,8 @@ import { getTokenDetails } from './Utilities'
 class AddAppointment extends React.Component {
     state = {
         credentials: {
-            DateofAppointment: "",
-            PurposeofAppointment: "",
-            User: ""
+            dateofAppointment: "",
+            purposeofAppointment: ""
         }
     }
 
@@ -63,7 +62,7 @@ class AddAppointment extends React.Component {
             obj.credentials.DateofAppointment = event.target.value;
         }
         this.setState(obj)
-        return
+        return;
     }
 
     render() {
@@ -77,16 +76,18 @@ class AddAppointment extends React.Component {
                         <FormGroup>
                             <ControlLabel>Purpose of Appointment</ControlLabel>
                             <FormControl
-                                name="PurposeofAppointment"
-                                onChange={event => this.handleChange(event)}
+                                name="purposeofAppointment"
+                                value={!this.props.updating ? this.state.credentials.PurposeofAppointment : this.props.appointment.purposeofAppointment}
+                                onChange={event => !this.props.updating ? this.handleChange(event) : this.props.OnUpdate(event)}
                                 placeholder="Enter Purpose of Appointment"
                             />
                         </FormGroup>
                         <FormGroup>
                             <ControlLabel>Date of Appointment</ControlLabel>
                             <FormControl
-                                name="DateofAppointment"
-                                onChange={event => this.handleChange(event)}
+                                name="dateofAppointment"
+                                value={!this.props.updating ? this.state.credentials.PurposeofAppointment : this.props.appointment.dateofAppointment}
+                                onChange={event => !this.props.updating ? this.handleChange(event) : this.props.OnUpdate(event)}
                                 placeholder="Enter Date of Appointment"
                             />
                         </FormGroup>

@@ -16,7 +16,7 @@ namespace Hygiea.Utilities {
         }
 
         public User Resolve(AppointmentDTO source, Appointment destination, User destMember, ResolutionContext context ){
-            var user = userRepository.FindUser(source.User);
+            var user = userRepository.FindUser(source.User.ToString());
             if(user != null){
                 destination.User = user;
                 return user;

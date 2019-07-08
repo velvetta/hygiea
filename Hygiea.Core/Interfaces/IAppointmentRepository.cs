@@ -15,6 +15,11 @@ namespace Hygiea.Core.Interfaces
         Task<Appointment> GetAppointment (string id);
         Task<IEnumerable<Appointment>> ApprovedAppointment();
         Task<IEnumerable<Appointment>> GetUserAppointments(string userId);
-        Task<bool> ApproveAppointment(string id);
+        Task<bool> ApproveAdminAppointment(string id);
+        Task<bool> ApproveUserAppointment(string id);
+        Task<IEnumerable<Appointment>> GetDailyAppointment();
+        Task<IEnumerable<Appointment>> PendingAppointment();
+        
+
     }
 }

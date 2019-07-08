@@ -23,20 +23,20 @@ class GetAppointments extends React.Component{
     };
 
     componentDidMount(){
-        if(getTokenDetails().AccountType === "RegularUser") {
+        if(getTokenDetails().RoleName === "RegularUser") {
             this.getUserAppointment()
         }
-        else if (getTokenDetails().AccountType === "Administrator"){
+        else if (getTokenDetails().RoleName === "Administrator"){
             this.getAppointments()
-
-        
         }
     }
+    
     openModalHandler(){
         this.setState({
             show: true
         });
     }
+
     closeModalHandler(){
         this.setState({
             show: false,
@@ -64,14 +64,15 @@ class GetAppointments extends React.Component{
 
     async udpateAppointmentState(id){
         const gottenAppointment = await this.getAppointment(id);
+        console.log(gottenAppointment)
         this.setState({isUpdating: true,show: true,selectedAppointment : gottenAppointment});
     }
 
     updateValues(event){
         const obj = {...this.state};
-        obj.selectedAppointment[event.target.name.toLowerCase()] = event.target.value;
+        obj.selectedAppointment[event.target.name] = event.target.value;
         this.setState(obj);
-        console.log(this.state.selectedAppointment);
+        console.log(this.state.selectedAppointment[event.target.name]);
     }
 
         getAppointments(){
@@ -92,7 +93,7 @@ class GetAppointments extends React.Component{
         
         getUserAppointment(){
             const userId = getTokenDetails().Id
-            fetch("http://localhost:52161/api/appointment/getuserappointment/" + userId,{
+            fetch(`http://localhost:52161/api/appointment/getuserappointment?userId=${userId}` ,{
                 method: "GET",
                 headers: new Headers({
                     "Accept": "application/json",
@@ -119,9 +120,27 @@ class GetAppointments extends React.Component{
             .then(res => console.log(res));
         }
 
-    handleApproveAppointment(id){
+    handleApproveAdminAppointment(id){
             const obj = {IsAppointmentApprovedAdmin: this.state.credentials.IsAppointmentApprovedAdmin , IsAppointmentApprovedUser: this.state.credentials.IsAppointmentApprovedUser};
-            fetch("http://localhost:52161/api/appointment/approveappointment" + id,{
+            fetch("http://localhost:52161/api/appointment/approveadminappointment/" + id,{
+                method: "POST",
+                body: JSON.stringify(obj),
+                headers: new Headers({
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+        })
+    })
+
+    .then(res => res.json())
+    .then(data => {})
+    .catch(err => alert("Error ocurred!"));
+
+      console.log(obj);
+        }
+
+        handleApproveUserAppointment(id){
+            const obj = {IsAppointmentApprovedAdmin: this.state.credentials.IsAppointmentApprovedAdmin , IsAppointmentApprovedUser: this.state.credentials.IsAppointmentApprovedUser};
+            fetch("http://localhost:52161/api/appointment/approveuserappointment/" + id,{
                 method: "POST",
                 body: JSON.stringify(obj),
                 headers: new Headers({
@@ -137,10 +156,11 @@ class GetAppointments extends React.Component{
       console.log(obj);
         }
     
-    
         renderAdminTable(){
             return (
                 <div>
+                    <AddAppointment OnUpdate={(event) => this.updateValues(event)} appointment={this.state.selectedAppointment}  updating={this.state.isUpdating} show={this.state.show} Close={() => this.closeModalHandler()}></AddAppointment>
+
                     <Table responsive>
                         <thead>
                             <tr>
@@ -149,9 +169,10 @@ class GetAppointments extends React.Component{
                                 <th>Date of Appointment</th>
                                 <th>Purpose of Appointment</th>
                                 <th>Date Appointment Made</th>       
+                                <th>Action</th>
+                                <th>Action</th>
                                 <th>Approve</th>
-                                <th>Action</th>
-                                <th>Action</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -160,14 +181,14 @@ class GetAppointments extends React.Component{
                                     this.state.data.map((value , key) => 
                                     (
                                         <tr key={key}>
-                                            <td>{value.Id}</td>
-                                            <td>{value.FirstName + value.LastName}</td>
-                                            <td>{value.DateAppointmentMade}</td>
-                                            <td>{value.DateofAppointment}</td>
-                                            <td>{value.PurposeofAppointment}</td>
-                                            {value.IsAppointmentApprovedAdmin === true  ? <td><Button onClick={()=>this.handleApproveAppointment(value.Id)}></Button></td> :null} 
-                                            <td><button onClick={() => this.deleteAppointment(value.Id)}>Delete</button></td>
+                                            <td>{value.id}</td>
+                                            <td>{value.emailAddress}</td>
+                                            <td>{value.dateAppointmentMade}</td>
+                                            <td>{value.dateofAppointment}</td>
+                                            <td>{value.purposeofAppointment}</td>
+                                            <td><button onClick={() => this.deleteAppointment(value.id)}>Delete</button></td>
                                             <td><button onClick={async () => await this.udpateAppointmentState(value.id)}>Update</button></td>
+                                            <td><Button onClick={()=>this.handleApproveAdminAppointment(value.id)}>Approve</Button></td>
 
                                         </tr>
                                     )
@@ -193,8 +214,9 @@ class GetAppointments extends React.Component{
                                 <th>Date of Appointment</th>
                                 <th>Purpose of Appointment</th>
                                 <th>Date Appointment Made</th>       
-                                <th>Approve</th>
+                                
                                 <th>Action</th>
+                                <th>Approve</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -203,12 +225,12 @@ class GetAppointments extends React.Component{
                                     this.state.data.map((value , key) => 
                                     (
                                         <tr key={key}>
-                                            <td>{value.Id}</td>
-                                            <td>{value.DateAppointmentMade}</td>
-                                            <td>{value.DateofAppointment}</td>
-                                            <td>{value.PurposeofAppointment}</td>
-                                            {value.IsAppointmentApprovedAdmin === true  ? <td><Button onClick={()=>this.handleApproveAppointment(value.Id)}></Button></td> :null} 
-                                            <td><button onClick={() => this.deleteAppointment(value.Id)}>Delete</button></td>
+                                            <td>{value.id}</td>
+                                            <td>{value.dateAppointmentMade}</td>
+                                            <td>{value.dateofAppointment}</td>
+                                            <td>{value.purposeofAppointment}</td>
+                                            <td><button onClick={() => this.deleteAppointment(value.id)}>Delete</button></td>
+                                            {value.isAppointmentApprovedAdmin === true  ? <td><Button onClick={()=>this.handleApproveUserAppointment(value.id)}>Approve</Button></td> :null} 
 
                                         </tr>
                                     )

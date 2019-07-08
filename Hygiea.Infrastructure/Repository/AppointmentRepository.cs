@@ -1,5 +1,6 @@
 using Hygiea.Core.Entities;
 using Hygiea.Core.Interfaces;
+using Hygiea.Infrastructure.Service;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,15 +12,16 @@ namespace Hygiea.Infrastructure.Repository
     public class AppointmentRepository : IAppointmentRepository
     {
         private readonly Database.DataContext dataContext;
+       
         public AppointmentRepository(Database.DataContext dataContext)
         {
             this.dataContext = dataContext;
+            
         }
         public async Task<bool> AddAppointmentAsync(string userId , Appointment appointment)
         {
             if(userId == null) return false; 
             
-            var appointmentUser = await dataContext.Appointments.Include(x=>x.User).SingleOrDefaultAsync(x=>x.Id == appointment.Id);
             var user = await dataContext.Users.SingleOrDefaultAsync(x=>x.Id == userId);
 
             var appointments = new Appointment{
@@ -33,7 +35,7 @@ namespace Hygiea.Infrastructure.Repository
             };
             
             
-            await dataContext.Appointments.AddAsync(appointment);
+            await dataContext.Appointments.AddAsync(appointments);
             
             return await dataContext.SaveChangesAsync() == 1;
 
@@ -47,7 +49,7 @@ namespace Hygiea.Infrastructure.Repository
         public async Task<bool> DeleteAppointmentAsync(string id)
         {
             if(id !=null){
-                var find = await dataContext.Appointments.FindAsync(id);
+                var find = await dataContext.Appointments.SingleOrDefaultAsync(x=>x.Id == id);
                 dataContext.Appointments.Remove(find);
                 return await dataContext.SaveChangesAsync() == 1;
             }
@@ -56,35 +58,39 @@ namespace Hygiea.Infrastructure.Repository
 
         public async Task<IEnumerable<Appointment>> GetAllAppointmentAsync()
         {
-            return await dataContext.Appointments.ToListAsync();
+            return await dataContext.Appointments.Include(x=>x.User).ToListAsync();
         }
 
         public async Task<IEnumerable<Appointment>> GetUserAppointments(string userId)
         {
-            var getUserAppointment = await dataContext.Appointments.Include(x=>x.User.FirstName).Include(x=>x.User.LastName).Where(x=>x.User.Id == userId).ToListAsync();
+            var getUserAppointment = await dataContext.Appointments.Include(x=>x.User).Where(x=>x.User.Id == userId).ToListAsync();
             return getUserAppointment;
         }
 
         public async Task<bool> UpdateAppointment(Appointment appointment)
         {
             if(appointment == null) return false;
-            var appointmentToUpdate = await dataContext.Appointments.SingleAsync(x=>x.Id == appointment.Id);
-            appointment.DateofAppointment = appointmentToUpdate.DateofAppointment;
+            
+            dataContext.Appointments.Update(appointment);
             return await dataContext.SaveChangesAsync() ==1;
+           
         }
         
 
-        public async Task<bool> ApproveAppointment(string id){
+        
+        public async Task<bool> ApproveAdminAppointment(string id){
             if(id == null) return false;
-
-            var appointment = await dataContext.Appointments.Include(x=>x.User).SingleOrDefaultAsync(x=>x.Id == id);
-            
-            if(appointment.User.AccountType == "Administrator") {
-                appointment.IsAppointmentApprovedAdmin = true;
-            }else if (appointment.User.AccountType == "RegularUser"){
-                appointment.IsAppointmentApprovedUser = true;
-            }
-            return await dataContext.SaveChangesAsync()==1;
+            var appointment = await dataContext.Appointments.SingleOrDefaultAsync(x=>x.Id == id);
+            appointment.IsAppointmentApprovedAdmin = true;
+            await dataContext.SaveChangesAsync();
+            return true;
+        }
+         public async Task<bool> ApproveUserAppointment(string id){
+            if(id == null) return false;
+            var appointment = await dataContext.Appointments.SingleOrDefaultAsync(x=>x.Id == id);
+            appointment.IsAppointmentApprovedUser = true;
+            await dataContext.SaveChangesAsync();
+            return true;
         }
 
         public async Task<Appointment> GetAppointment(string id){
@@ -93,6 +99,19 @@ namespace Hygiea.Infrastructure.Repository
             var appointmentId = await dataContext.Appointments.SingleOrDefaultAsync(x=>x.Id == id);
             return appointmentId;
         }
-        
+
+        public async Task<IEnumerable<Appointment>> GetDailyAppointment(){
+
+            var dailyAppointment = await dataContext.Appointments.Where(x=>x.DateofAppointment.Date == DateTime.Now.Date).ToListAsync();
+            return dailyAppointment;
+        }
+
+        public async Task<IEnumerable<Appointment>> PendingAppointment()
+        {
+            var pendingAppointment = await dataContext.Appointments.Where(x=>x.IsAppointmentApprovedAdmin == false && x.IsAppointmentApprovedUser == true ||
+            x.IsAppointmentApprovedAdmin == true && x.IsAppointmentApprovedUser== false).ToListAsync();
+
+            return pendingAppointment;
+        }
     }
 }

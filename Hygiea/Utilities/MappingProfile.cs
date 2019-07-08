@@ -18,9 +18,11 @@ namespace Hygiea.Utilities
             CreateMap<UserDTO, User>();
             CreateMap<Drug,DrugDTO>();
             CreateMap<DrugDTO,Drug>();
-            CreateMap<Appointment, AppointmentDTO>()
-            .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User.Id));
-            CreateMap<AppointmentDTO,Appointment>();
+            CreateMap<Appointment, AppointmentDTO>();
+            // .ForMember(dest => dest.User.ToString(), opt => opt.MapFrom(src => src.User));
+            CreateMap<AppointmentDTO,Appointment>()
+            .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
+
            
             
         }
