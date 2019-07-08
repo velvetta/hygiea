@@ -101,18 +101,6 @@ namespace Hygiea.Controllers
             return appointmentCollection;
         }
 
-        [HttpGet]
-        [Route("pendingappointment")]
-        [Authorize(Roles = "Administration")]
-        public async Task<IEnumerable<AppointmentDTO>> PendingAppointment(){
-            if (!ModelState.IsValid)
-                return null;
-
-            var pendingAppointment = await appointmentRepository.PendingAppointment();
-            var appointmentCollection = new List<AppointmentDTO>();
-            pendingAppointment.ToList().ForEach(x=>appointmentCollection.Add(mapper.Map<Appointment, AppointmentDTO>(x)));
-            return appointmentCollection;
-        }
         
         [HttpPost]
         [Route("approveadminappointment/{id}")]
