@@ -14,12 +14,14 @@ namespace Hygiea.Infrastructure.Repository
         private readonly Database.DataContext dataContext;
         private readonly IRoleServices roleServices;
         private readonly IHygieaManager hygieaManager;
+        private readonly IUtilitiesServices utilitiesServices;
        
-        public UserRepository(Database.DataContext dataContext, IRoleServices roleServices, IHygieaManager hygieaManager)
+        public UserRepository(Database.DataContext dataContext, IRoleServices roleServices, IHygieaManager hygieaManager,IUtilitiesServices utilitiesServices)
         {
             this.dataContext = dataContext;
             this.roleServices = roleServices;
             this.hygieaManager = hygieaManager;
+            this.utilitiesServices = utilitiesServices;
         }
         public Task<(bool flag, string message)> ChangeUserPassword(string password, string newPassword, string userId)
         {
@@ -92,6 +94,7 @@ namespace Hygiea.Infrastructure.Repository
 
                 await hygieaManager.AddUserAsync(user);
                 await roleServices.AddUserToRole("RegularUser", user.Id);
+                await utilitiesServices.RegistrationSuccessEmail(user.Id);
                 return true;
             }
             catch { return false; }

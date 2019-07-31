@@ -12,10 +12,12 @@ namespace Hygiea.Infrastructure.Repository
     public class AppointmentRepository : IAppointmentRepository
     {
         private readonly Database.DataContext dataContext;
+        private readonly IUtilitiesServices utilitiesServices; 
        
-        public AppointmentRepository(Database.DataContext dataContext)
+        public AppointmentRepository(Database.DataContext dataContext, IUtilitiesServices utilitiesServices)
         {
             this.dataContext = dataContext;
+            this.utilitiesServices = utilitiesServices;
             
         }
         public async Task<bool> AddAppointmentAsync(string userId , Appointment appointment)
@@ -36,6 +38,7 @@ namespace Hygiea.Infrastructure.Repository
             
             
             await dataContext.Appointments.AddAsync(appointments);
+            await utilitiesServices.AddAppointmentEmail(appointments);
             
             return await dataContext.SaveChangesAsync() == 1;
 
@@ -72,7 +75,10 @@ namespace Hygiea.Infrastructure.Repository
             if(appointment == null) return false;
             
             dataContext.Appointments.Update(appointment);
-            return await dataContext.SaveChangesAsync() ==1;
+            await dataContext.SaveChangesAsync();
+            await utilitiesServices.UpdateAppointmentEmail(appointment.Id);
+            return true;
+            
            
         }
         
@@ -83,6 +89,7 @@ namespace Hygiea.Infrastructure.Repository
             var appointment = await dataContext.Appointments.SingleOrDefaultAsync(x=>x.Id == id);
             appointment.IsAppointmentApprovedAdmin = true;
             await dataContext.SaveChangesAsync();
+            
             return true;
         }
          public async Task<bool> ApproveUserAppointment(string id){
@@ -90,6 +97,7 @@ namespace Hygiea.Infrastructure.Repository
             var appointment = await dataContext.Appointments.SingleOrDefaultAsync(x=>x.Id == id);
             appointment.IsAppointmentApprovedUser = true;
             await dataContext.SaveChangesAsync();
+            await utilitiesServices.ApproveUserEmail(id);
             return true;
         }
 

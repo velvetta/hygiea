@@ -1,10 +1,13 @@
+using System.Text;
 using AutoMapper;
 using Hygiea.Core.Interfaces;
 using Hygiea.Infrastructure.Database;
 using Hygiea.Infrastructure.Manager;
 using Hygiea.Infrastructure.Repository;
 using Hygiea.Infrastructure.Service;
+using Hygiea.Infrastructure.Utilities;
 using Hygiea.Utilities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -13,6 +16,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Hygiea
 {
@@ -43,9 +47,27 @@ namespace Hygiea
             services.AddScoped<IHygieaManager, HygieaManager>();
             services.AddScoped<IDrugRepository, DrugRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            services.AddScoped<IUtilitiesServices, UtilitiesService>();
             services.AddAutoMapper();
             Mappings.RegisterMappings();
 
+            Mailer.Configure("smtp.gmail.com", 587, "eagle_ex2009@yahoo.com", "0803Ojay");
+
+                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(option =>
+                {
+                    option.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+
+                        ValidIssuer = "http://localhost:52161/",
+                        ValidAudience = "http://localhost:52161/",
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("reacthygieaauthtoken"))
+                    };
+                });
 
         }
 

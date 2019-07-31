@@ -1,0 +1,17 @@
+﻿
+
+
+.register{
+    font-size: 50px;
+    text-align: center
+    
+}
+.button{
+    padding: 5px 15px 5px 15px;
+}
+.buttoncontainer{
+    padding-left: 380px
+}
+.formcontainer{
+   display: inline;
+}

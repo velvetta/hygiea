@@ -25,7 +25,7 @@ namespace Hygiea.Controllers
         }
 
         [HttpPost]
-        // [Authorize]
+        [Authorize]
         [Route("addappointment")]
         public async Task<IActionResult> AddAppointment(string userId, [FromBody] AppointmentDTO appointmentDTO){
             if (!ModelState.IsValid)
@@ -39,7 +39,7 @@ namespace Hygiea.Controllers
 
         [HttpDelete]
         [Route("deleteappointment/{id}")]
-        // [Authorize(Roles = "Administrator")]
+        // [Authorize]
         public async Task<IActionResult> DeleteAppointment(string id){
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -66,8 +66,20 @@ namespace Hygiea.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Administrator")]
+        [Route("pendingappointments")]
+        public async Task<IEnumerable<AppointmentDTO>> GetPendingAppointments(){
+            if (!ModelState.IsValid)
+                return null;
+            
+            var pendingAppointment = await appointmentRepository.PendingAppointment();
+            var appointmentCollection = new List<AppointmentDTO>();
+            pendingAppointment.ToList().ForEach(x=>appointmentCollection.Add(mapper.Map<Appointment, AppointmentDTO>(x)));
+            return appointmentCollection;
+        }
+        [HttpGet]
         [Route("getuserappointment")]
-        // [Authorize]
+        [Authorize]
         public async Task<IEnumerable<AppointmentDTO>> GetUserAppointment(string userId){
             if (!ModelState.IsValid)
                 return null;
@@ -79,7 +91,7 @@ namespace Hygiea.Controllers
         }
         
         [HttpGet]
-        [Authorize(Roles = "Administration")]
+        // [Authorize(Roles = "Administration")]
         [Route("getdailyappointment")]
         public async Task<IEnumerable<AppointmentDTO>> GetDailyAppointment(){
             if (!ModelState.IsValid)
@@ -92,6 +104,7 @@ namespace Hygiea.Controllers
 
         [HttpGet]
         [Route("approvedappointment")]
+        [Authorize]
         public async Task<IEnumerable<AppointmentDTO>> ApprovedAppointment(){
             if (!ModelState.IsValid)
                 return null;
@@ -117,6 +130,7 @@ namespace Hygiea.Controllers
          
         [HttpPost]
         [Route("approveuserappointment/{id}")]
+        [Authorize]
         public async Task<IActionResult> ApproveUserAppointment(string id){
             if (!ModelState.IsValid)
                 return null;
@@ -130,6 +144,7 @@ namespace Hygiea.Controllers
         
         [HttpPut]
         [Route("updateappointments")]
+        [Authorize(Roles="Administrator")]
         public async Task<IActionResult> UpdateAppointment (AppointmentDTO appointmentDTO){
             if (!ModelState.IsValid)
                 return null;

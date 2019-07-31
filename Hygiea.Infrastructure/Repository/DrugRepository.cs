@@ -11,9 +11,11 @@ namespace Hygiea.Infrastructure.Repository
     public class DrugRepository : IDrugRepository
     {
         private readonly Database.DataContext dataContext;
-        public DrugRepository(Database.DataContext dataContext)
+        private readonly IUtilitiesServices utilitiesService;
+        public DrugRepository(Database.DataContext dataContext,IUtilitiesServices utilitiesService)
         {
             this.dataContext = dataContext;
+            this.utilitiesService = utilitiesService;
         }
 
         public async Task<IEnumerable<Drug>> AboutToFinishdDrug()
@@ -70,12 +72,19 @@ namespace Hygiea.Infrastructure.Repository
                 var drugToUpdate = await dataContext.Drugs.SingleAsync(x=>x.Id == drugs.Id);
                 drugToUpdate.Name = drugs.Name;
                 drugToUpdate.Price = drugs.Price;
+
                 drugToUpdate.Quantity = drugs.Quantity;
+
+                if(drugToUpdate.Quantity <= 3) {
+                    await utilitiesService.WarningDrugsEmail(drugToUpdate.Id);
+                }else if (drugToUpdate.Quantity == 0 ){
+                    await utilitiesService.FinishedDrugsEmail(drugToUpdate.Id);
+                }
                 return (await dataContext.SaveChangesAsync()==1);
             }
             return false;
 
-            //a logic for the updating drug
+           
         }
     }
 }

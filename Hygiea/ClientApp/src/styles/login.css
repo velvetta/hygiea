@@ -1,5 +1,5 @@
  .loginform{
-   margin-top: 80px
+   margin-top: 120px
      
  }
 
@@ -15,7 +15,7 @@
 
   .container {
     padding: 2px 200px;
-    margin-top: 80px;
+    margin-top: 120px;
     
   }
   .divconatiner{
@@ -25,10 +25,12 @@
       padding-left: 100px
   }
   .buttoncontainer{
-    padding-left: 210px
+    padding-left: 210px;
+    color: goldenrod
   }
   .button{
     padding: 5px 15px 5px 15px;
+    
 
   }
   .sign{

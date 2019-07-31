@@ -25,7 +25,7 @@ namespace Hygiea.Controllers
         }
 
         [HttpPost]
-        // [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator")]
         [Route("adddrugs")]
         public async Task<IActionResult> AddDrugs([FromBody] DrugDTO drugDTO)
         {
@@ -43,7 +43,7 @@ namespace Hygiea.Controllers
         }
 
         [HttpDelete]
-        // [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator")]
         [Route("deletedrug/{id}")]
         public async Task<IActionResult> DeleteDrugs(string id)
         {
@@ -58,8 +58,9 @@ namespace Hygiea.Controllers
             }
             return BadRequest();
         }
+
         [HttpGet]
-        // [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator")]
         [Route("getdrugs")]
         public async Task<IEnumerable<DrugDTO>> GetDrugs()
         {
@@ -114,6 +115,7 @@ namespace Hygiea.Controllers
 
         [HttpPut]
         [Route("updatedrugs")]
+        [Authorize(Roles="Administrator")]
         public async Task<IActionResult> UpdateDrug([FromBody] DrugDTO drugDTO)
         {
             if (!ModelState.IsValid)
@@ -122,6 +124,12 @@ namespace Hygiea.Controllers
             if(drugDTO == null) return BadRequest("Not Successful");
             var drug = mapper.Map<DrugDTO, Drug>(drugDTO);
             await drugRepository.UpdateDrug(drug);
+            if(drug.Quantity <= 3){
+
+            }
+            if(drug.Quantity == 0){
+                
+            }
             return Ok("Success");
 
         }
