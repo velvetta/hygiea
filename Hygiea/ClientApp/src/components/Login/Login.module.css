@@ -9,7 +9,7 @@
     margin-bottom: 25px;
 }
 
-.root > form {
+.root > div {
     display: flex;
     flex-direction: column;
     background-color: #2c3e50;

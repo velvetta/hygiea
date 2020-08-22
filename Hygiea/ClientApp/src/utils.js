@@ -6,6 +6,9 @@ export function saveToken(token){
 export function getToken(){
     return localStorage.getItem("hygieatoken");
 }
+export function deleteToken(){
+    localStorage.removeItem("hygieatoken");
+}
 export function getTokenDetails(){
    return JWT.decode(getToken());
 }

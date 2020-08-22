@@ -48,6 +48,7 @@ namespace Hygiea
             services.AddScoped<IDrugRepository, DrugRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             services.AddScoped<IUtilitiesServices, UtilitiesService>();
+            services.AddScoped<IEmailSender, EmailService>();
             services.AddAutoMapper();
             Mappings.RegisterMappings();
 

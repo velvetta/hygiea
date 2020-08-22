@@ -1,10 +1,18 @@
 import React, { Component } from "react";
 import styles from "./Header.module.css";
 import { withRouter } from "react-router-dom";
+import { deleteToken } from "../../utils";
 
 class Header extends Component {
+  logout(){
+    deleteToken();
+    this.props.history.push("/login");
+  }
   render() {
     console.log(this.props.history);
+    const classNames = [
+      styles["nav-item"]
+    ].join(" ");
     return (
       <div className={styles.root}>
         <div className={[styles.wrap, "container"].join(" ")}>
@@ -31,6 +39,12 @@ class Header extends Component {
                   );
                 })
               : null}
+              <li
+                      className={classNames}
+                      onClick={() => this.logout()}
+                    >
+                      Logout
+                    </li>
           </nav>
         </div>
       </div>

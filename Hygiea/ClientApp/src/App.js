@@ -9,6 +9,7 @@ const routes = [
   { name: "Dashboard", path: "/app/dashboard", component: Dashboard },
   { name: "Drugs", path: "/app/drugs", component: Drugs },
   { name: "Appoitnments", path: "/app/appoitnments", component: Appoitments }
+
 ];
 
 function App(props) {
