@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^3.4.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "material-table": "^1.41.0",
     "react": "^16.0.0",
     "react-bootstrap": "^0.31.5",
